@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style>
+</style>
+	<script type="text/javascript">
+        function getHTML(head,body,bodye)
+        {
+            return "<html><head>"+head+"</head><body "+bodye+">"+body+"</body></html>"
+        }
+		function isDigit(s) 
+		{ 
+			var patrn=/^[0-9]*$/; 
+			if (!patrn.exec(s)) return false ;
+			return true ;
+		} 
+		function isDigitAndComma(s) 
+		{ 
+			var patrn=/^[0-9,]*$/; 
+			if (!patrn.exec(s)) return false ;
+			return true ;
+		} 
+	</script>
+    <script>
+
+        var girls=new Array(
+        	"朱梦琦",
+            "冯佳琪",
+            "谭易成",
+            "孙临",
+            "林欢",
+            "郭田潇",
+            "梅王洁",
+            "胡雨菡",
+            "吴霞",
+            "田韵",
+            "杨沛钧"
+        );
+        var boys=new Array(
+        	"黄进",
+        	"伍梦天",
+        	"周桐",
+        	"徐炜",
+        	"江宸宇",
+            "傅雨洁",
+            "廖智凌",
+            "徐逸文",
+            "侍恒",
+            "向棋麟",
+            "周行健",
+            "王威浩",
+            "谢伟",
+            "倪效宽",
+            "后希中",
+            "骆融臻",
+            "沈伟",
+            "张立伟",
+            "刘鹏",
+            "国俊宝",
+            "陈瑜",
+            "李树森",
+            "袁慕炯",
+            "宋顺翔",
+            "陈学义",
+            "韦超",
+            "柯浩进",
+            "何卓林",
+            "陈成",
+            "章乐远",
+            "郑斯水",
+            "曹经文"
+        );
+        var students=girls.concat(boys)
+		
+        var girlcount=girls.length;
+        var boycount=boys.length;
+        var studentcount=students.length;
+        var girloffest=0;
+        var boyoffest=girlcount;
+        var studentoffest=0;
+		
+        function printallstudents()
+        {
+            for(var i=0;i<studentcount;i++)
+            {
+                	document.getElementById("majorpanel").innerHTML+=students[i]+"</br>";
+            }
+    
+            document.close();
+        }
+		function wrapHTML()
+		{
+		}
+        function group(gn,excludes)
+        {
+
+            var out="";
+            if(gn>8||gn<2){alert("仅可以分8组及以下,2组及以上");}
+			
+			var actualgroup=new Array();//排除了主持人们
+			excludeperson=excludes.split(",");
+
+			for(var i=0;i<studentcount;i++)
+			{
+				var isexist=false;
+				//检测在不在exclude表里面
+				for(var j=0;j<excludeperson.length;j++)
+				{	//注意学号从1开始,所以要减去1
+					if(excludeperson[j]-1==i)
+					{
+						isexist=true;break;
+					}
+				}
+				//如果不在exclude表里面,就把学号加为候选人
+				if(isexist==false)
+				{
+					actualgroup.push(students[i]);
+				}
+				//学号=index+1,这里是index
+			}
+			
+            var normalcount=Math.floor(actualgroup.length/ gn);//一组有多少个数
+            var frontcount=normalcount*gn;//可整除的分组
+            var restcount=actualgroup.length%gn;//余数分组
+            var grps=new Array();//二维数组,分组
+            var notfull=new Array();
+
+			
+            //二维是学号数组
+            for(var i=0;i<gn;i++)
+            {
+                grps[i]=new Array();
+            }
+
+            for(var i=0;i<frontcount;i++)//先初始化一下前面的
+            {
+                //获得未满的分组
+                notfull=new Array();
+                for(var ix=0;ix<gn;ix++)//遍历所有组
+                {
+                    if(grps[ix].length<normalcount)//ix组没满
+                    {
+						
+                        notfull.push(ix);//ix加入notfull
+                    }
+                }
+				
+                //随机一个组
+                g=notfull[Math.floor(Math.random()*notfull.length)];
+                grps[g].push(i);
+
+            }
+            if(restcount!=0)
+            {
+                for(var i=frontcount;i<actualgroup.length;i++)
+                {
+                    //获得未满的分组
+                    notfull=new Array();
+                    for(var ix=0;ix<gn;ix++)
+                    {
+						if(grps[ix].length<normalcount+1)//ix组没满
+						{
+							notfull.push(ix);//加入notfull
+						}
+                    }
+                    //随机一个组
+                    g=notfull[Math.floor(Math.random()*notfull.length)];
+                    grps[g].push(i);
+
+                }
+            }
+    		
+			out+="<table class=showgrp>";
+			
+			for(var i=0;i<gn;i++)
+			{
+				out+="<tr>";
+				out+="<td>"+"第"+(i+1).toString()+"组"+"</td>";
+				for(var j=0;j<grps[i].length;j++)
+				{
+					out+="<td>"+actualgroup[grps[i][j]]+"</td>";
+				}
+				out+="</tr>";
+			}
+			out+="</table>";
+           	document.getElementById("majorpanel").innerHTML=out;
+        }
+		function randomhost(nogirlids,noboyids, chooset)
+		{
+			if(isDigitAndComma(noboyids) && isDigitAndComma(nogirlids))
+			{
+				var g,b;//男女主持
+				var sg=new Array();//女候选人
+				var sb=new Array();//男候选人
+				if(nogirlids=="")//没有女生排除
+				{
+					for(var i=girloffest;i<girloffest+girlcount;i++)
+					{
+						sg.push(i);
+					}
+				}
+				else 
+				{
+					var girlexclude=new Array();
+					girlexclude=nogirlids.split(",");
+					for(var i=girloffest;i<girloffest+girlcount;i++)
+					{
+						//对于所有的女生
+						var isexist=false;
+						//检测在不在exclude表里面
+						for(var j=0;j<girlexclude.length;j++)
+						{	
+							//注意学号从1开始,所以要减去1
+							if(girlexclude[j]-1==i)
+							{
+								isexist=true;break;
+							}
+						}
+						//如果不在exclude表里面,就把学号加为候选人
+						if(isexist==false)
+						{
+							//学号=index+1,这里是index
+							sg.push(i);
+						}
+						
+					}
+				}
+				
+				if(noboyids=="")//没有男生排除
+				{
+					for(var i=boyoffest;i<boyoffest+boycount;i++)
+					{
+						sb.push(i);
+					}
+				}
+				else
+				{	
+					var boyexclude= new Array();
+					boyexclude=noboyids.split(",");
+					for(var i=boyoffest;i<boyoffest+boycount;i++)
+					{
+						var isexist=false;
+						for(var j=0;j<boyexclude.length;j++)
+						{
+							//注意学号从1开始,所以要减去1
+							if(boyexclude[j]-1==i)
+							{
+								isexist=true;break;
+							}
+						}
+						//如果不在exclude表里面,就把学号加为候选人
+						if(isexist==false)
+						{
+							sb.push(i);
+						}
+						//学号=index+1,这里是index
+					}
+				}
+
+				g=sg[Math.floor(Math.random()*sg.length)];
+				b=sb[Math.floor(Math.random()*sb.length)];
+
+				if(chooset == 1){
+					//选择一对
+					document.getElementById("majorpanel").innerHTML
+						="<p>女生:"+(g+1).toString() + ",姓名: " +students[g]+"</p>"+"<p>男生"+(b+1).toString()+ ",姓名: " +students[b] +"</p>";
+					if(document.getElementById("randomhostexcludereserve").checked)
+					{
+						if(document.getElementById("boyhostexclude").value!="" && !isNaN(b+1))
+						{
+							document.getElementById("boyhostexclude").value=document.getElementById("boyhostexclude").value+","+(b+1);
+						}else
+						{
+							document.getElementById("boyhostexclude").value+=(b+1);
+						}
+						
+						if(document.getElementById("girlhostexclude").value!=""&& !isNaN(g+1))
+						{
+							document.getElementById("girlhostexclude").value=document.getElementById("girlhostexclude").value+","+(g+1);
+						}else
+						{
+							document.getElementById("girlhostexclude").value+=(g+1);
+						}	
+					}
+				}else{
+					//选择一位
+					if(Math.random() > 0.5){
+						// 选女生
+						if(document.getElementById("randomhostexcludereserve").checked)
+						{
+							if(document.getElementById("girlhostexclude").value!=""&& !isNaN(g+1))
+							{
+								document.getElementById("girlhostexclude").value=document.getElementById("girlhostexclude").value+","+(g+1);
+							}else
+							{
+								document.getElementById("girlhostexclude").value+=(g+1);
+							}	
+						}
+						document.getElementById("majorpanel").innerHTML
+							="<p>序号:"+(g+1).toString() + ",姓名: " +students[g]+"</p>";
+					}else{
+						// 选男生
+						if(document.getElementById("randomhostexcludereserve").checked)
+						{
+							if(document.getElementById("boyhostexclude").value!="" && !isNaN(b+1))
+							{
+								document.getElementById("boyhostexclude").value=document.getElementById("boyhostexclude").value+","+(b+1);
+							}else
+							{
+								document.getElementById("boyhostexclude").value+=(b+1);
+							}
+						}
+						document.getElementById("majorpanel").innerHTML
+							="<p>序号:"+(b+1).toString() + ",姓名: " +students[b]+"</p>";
+					}
+				}
+			}else
+			{
+				alert("格式错误,必须为数字+逗号,如1,3,5,7");
+			}
+		}
+		var thenumbertoguess=0;
+		var currentmin=0;
+		var currentmax=0;
+		function startguessnumber(range)
+		{
+			if(range>0)
+			{
+				currentmin=1;
+				currentmax=range;
+				while(thenumbertoguess<=0)
+				{
+					thenumbertoguess=Math.floor(range*Math.random());
+				}
+				document.getElementById('majorpanel').innerHTML="<p>随机数已生成.范围: " + currentmin +"~" + currentmax +" </p>";
+				document.getElementById('requirepanel').innerHTML=guessnumberpanelproc;
+			}else
+			{
+				alert("错误的数字!!");
+			}
+		}
+		function endguessnumber()
+		{
+			alert("正确答案是: "+thenumbertoguess);
+			document.getElementById('requirepanel').innerHTML=guessnumberpanelinit;
+			document.getElementById('majorpanel').innerHTML="";
+			thenumbertoguess=0;
+			currentmin=0;
+			currentmax=0;
+		}
+		function numberguess(say)
+		{
+			
+			if(parseInt(say)>currentmax )
+			{
+				alert("输入数字过大");
+			}
+			else if(parseInt(say)<currentmin)
+			{
+				alert("输入数字过小");
+			}
+			else if(parseInt(say)==0)
+			{
+				alert("猜数游戏未初始化");
+			}
+			else
+			{
+				if(say==thenumbertoguess)
+				{
+					alert("Congratulations!你猜对了!!");
+					endguessnumber();
+				}
+				else if(say>thenumbertoguess)
+				{
+					currentmax=say;
+					document.getElementById('majorpanel').innerHTML="<p>随机数范围: " + currentmin +"~" + currentmax +" </p>";
+				}
+				else if(say<thenumbertoguess)
+				{
+					currentmin=say;
+					document.getElementById('majorpanel').innerHTML="<p>随机数范围: " + currentmin +"~" + currentmax +" </p>";
+				}
+			}
+		}
+		var nav;//导航栏
+		var grouppanelinit;//分组
+		var randomhostpanelinit;//抽主持人
+		var guessnumberpanelinit;//猜数字
+		nav=
+			"";
+		
+		grouppanelinit=
+			"<label>请输入组数(2-8)<input type=\"text\" name=\"groupcount\" id=\"groupcount\" /></label>"+
+			"<label>排除的学号:<input type=\"text\" name=\"groupexclude\" id=\"groupexclude\" /></label>"+
+			"<input type=\"button\" value=\"提交\"  onClick=\" group( document.getElementById('groupcount').value , document.getElementById('groupexclude').value ) \" />"+
+			"";
+		randomhostpanelinit=
+			"<label for=\"girlhostexclude\">女生排除</label>"+
+			"<input type=\"text\" name=\"girlhostexclude\" id=\"girlhostexclude\" />"+
+			"<label for=\"boyhostexclude\"><br />"+
+			"男生排除</label>"+
+			"<input type=\"text\" name=\"boyhostexclude\" id=\"boyhostexclude\" /><br>"+
+			"<label for=\"randomhostexcludereserve\">选中排除<input type=\"checkbox\" name=\"randomhostexcludereserve\" id=\"randomhostexcludereserve\" /></label><br>"+
+			"<input type=\"button\" name=\"button\" id=\"button\" value=\"选择一对\" onClick= \" randomhost( document.getElementById('girlhostexclude').value, document.getElementById('boyhostexclude').value , 1) \"  />"+
+			"<input type=\"button\" name=\"button\" id=\"button\" value=\"选择一位\" onClick= \" randomhost( document.getElementById('girlhostexclude').value, document.getElementById('boyhostexclude').value , 2) \"  />" +
+			"<input type=\"button\" name=\"button\" id=\"button\" value=\"重置\" onClick= \" document.getElementById('girlhostexclude').value = ''; document.getElementById('boyhostexclude').value = ''  \"  />"
+			;
+		guessnumberpanelinit=
+			"<label for=\"guessnumberrange\">请输入范围(整数)</label>"+
+			"<input type=\"text\" name=\"guessnumberrange\" id=\"guessnumberrange\" />"+
+			"<input type=\"button\" name=\"button\" id=\"button\" value=\"确定\" onClick=\" startguessnumber( document.getElementById('guessnumberrange').value ) \" />";
+		var guessnumberpanelproc=
+			"<label for=\"guessnumbernow\">请猜测</label>"+
+			"<input type=\"text\" name=\"guessnumbernow\" id=\"guessnumbernow\" />"+
+			"<input type=\"button\" name=\"button\" id=\"button\" value=\"确定\" onClick=\" numberguess( document.getElementById('guessnumbernow').value ) \" />"+
+			"<input type=\"button\" name=\"button\" id=\"button\" value=\"退出\" onClick=\" endguessnumber() \" />"
+			;
+	</script>
+	<title>1</title>
+</head>
+
+<body onload="">
+
+    <div id="navcontainer"> 
+    <ul id="navlist"> 
+    <li><a href="#" onclick="document.getElementById('requirepanel').innerHTML=grouppanelinit;document.getElementById('majorpanel').innerHTML=''">分组</a></li> 
+    <li><a href="#" onclick="document.getElementById('requirepanel').innerHTML=randomhostpanelinit;document.getElementById('majorpanel').innerHTML=''">选人</a></li> 
+    <li><a href="#" onclick="document.getElementById('requirepanel').innerHTML=guessnumberpanelinit;document.getElementById('majorpanel').innerHTML=''">游戏</a> 
+	</li>
+    </ul> 
+    </div>
+    <div id="requirepanel"></div>
+	<div id="majorpanel"></div>
+</body>
+</html>
